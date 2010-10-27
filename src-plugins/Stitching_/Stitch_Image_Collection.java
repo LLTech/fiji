@@ -1476,6 +1476,9 @@ public class Stitch_Image_Collection implements PlugIn
 				i++;
 		}
 		
+		if (imageInformationList.isEmpty())
+			throw new RuntimeException("None of input images could be loaded, aborting");
+
 		// get the connecting tiles
 		ArrayList<OverlapProperties> overlappingTiles = new ArrayList<OverlapProperties>();
 		int nbTilesInRow = getNbTilesInRow(imageInformationList);
