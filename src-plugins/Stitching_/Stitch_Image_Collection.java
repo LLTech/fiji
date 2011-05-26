@@ -28,6 +28,7 @@ import static stitching.CommonFunctions.addHyperLinkListener;
 import static stitching.CommonFunctions.getPixelMin;
 import static stitching.CommonFunctions.getPixelMinRGB;
 
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,6 +45,7 @@ import fiji.util.gui.GenericDialogPlus;
 
 import ij.gui.MultiLineLabel;
 import ij.measure.Calibration;
+import ij.plugin.ContrastEnhancer;
 import ij.plugin.PlugIn;
 import ij.IJ;
 import ij.ImagePlus;
@@ -234,7 +236,9 @@ public class Stitch_Image_Collection implements PlugIn
 		
 		// fuse the images
 		ImagePlus fused = fuseImages(newImageInformationList, max, "Stitched Image", fusionMethod, rgbOrder, dim, alpha);
-		fused.show();
+		
+		if (!GraphicsEnvironment.isHeadless())
+			fused.show();
 		IJ.log("(" + new Date(System.currentTimeMillis()) + "): Finished Stitching.");
 		return fused;
 	}
@@ -332,7 +336,8 @@ public class Stitch_Image_Collection implements PlugIn
 		Calibration cal = null;
 		
 		final ImageStack fusedStack = fusedImp.getStack();	
-		fusedImp.show();
+		if (!GraphicsEnvironment.isHeadless())
+			fusedImp.show();
 
 		try
 		{
@@ -1298,13 +1303,18 @@ public class Stitch_Image_Collection implements PlugIn
 				
 				//final ImagePlus imp1b =  new ImagePlus("Imp1 B", imp1.getProcessor().duplicate());
 				final ImageProcessor ip1 = imp1.getProcessor().duplicate();
-				IJ.run(imp1, "Enhance Contrast", "saturated=0.1 normalize");				
+				ContrastEnhancer enh = new ContrastEnhancer();
+				
+				//equivalent of running "enhance contrast" with saturation=0.1 and normalize=true
+				enh.stretchHistogram(imp1, 0.1, true);
+				
 				stitch.imp1 = imp1;
 				
 				//final ImagePlus imp2b = new ImagePlus("Imp2 B", imp2.getProcessor().duplicate());
 				
 				final ImageProcessor ip2 = imp2.getProcessor().duplicate();
-				IJ.run(imp2, "Enhance Contrast", "saturated=0.1 normalize");				
+				
+				enh.stretchHistogram(imp2, 0.1, true);
 				stitch.imp2 = imp2;
 				
 				stitch.doLogging = false;
