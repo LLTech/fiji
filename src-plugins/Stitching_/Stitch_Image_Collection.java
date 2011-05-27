@@ -72,9 +72,9 @@ public class Stitch_Image_Collection implements PlugIn
 	final private String myURL = "http://fly.mpi-cbg.de/~preibisch/contact.html";
 	public int dim = -1;
 	
-	public double alpha, thresholdR, thresholdDisplacementRelative, thresholdDisplacementAbsolute;
-	public String rgbOrder;
-	private double maxDeltaToExpectedCorrelation;
+	public double alpha = 1.5, thresholdR = 0.3, thresholdDisplacementRelative = 2.5, thresholdDisplacementAbsolute = 3.5;
+	public String rgbOrder = rgbTypes[0];
+	private double maxDeltaToExpectedCorrelation = -1;
 	
 	public static String fileNameStatic = "TileConfiguration.txt";
 	public static boolean computeOverlapStatic = true;
@@ -155,11 +155,11 @@ public class Stitch_Image_Collection implements PlugIn
 		work(fileName, previewOnly, computeOverlap, fusionMethod, handleRGB, fastCorrelation);
 	}
 	
-	public void work(String fileName, boolean createPreview, boolean computeOverlap, String fusionMethod, String handleRGB, boolean fastCorrelation)
+	public ImagePlus work(String fileName, boolean createPreview, boolean computeOverlap, String fusionMethod, String handleRGB, boolean fastCorrelation)
 	{
 		// read the layout file
 		ArrayList<ImageInformation> imageInformationList = readLayoutFile(fileName);		
-		work(imageInformationList, createPreview, computeOverlap, fusionMethod, handleRGB, fileName, fastCorrelation);
+		return work(imageInformationList, createPreview, computeOverlap, fusionMethod, handleRGB, fileName, fastCorrelation);
 	}
 	
 	public ImagePlus work( GridLayout gridLayout, boolean createPreview, boolean computeOverlap, String fileName, boolean fastCorrelation)
