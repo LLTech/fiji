@@ -20,6 +20,7 @@
  */
 package stitching;
 
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
@@ -27,11 +28,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import loci.formats.ChannelSeparator;
-import loci.formats.FormatException;
-import loci.formats.FormatTools;
-import loci.formats.IFormatReader;
 
 import edu.mines.jtk.dsp.FftComplex;
 import edu.mines.jtk.dsp.FftReal;
@@ -68,9 +64,7 @@ public class CommonFunctions
 		}
 		else
 		{
-			imp = openLOCIImagePlus(directory, file, seriesNumber, rgb);
-			if (imp == null)
-				imp = new Opener().openImage((new File(directory, file)).getPath());
+			IJ.error("Unknown extension, LOCI tools disabled in this version");
 		}
 
 		
@@ -105,206 +99,6 @@ public class CommonFunctions
 				text.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
-	}
-
-	public static ImagePlus openLOCIImagePlus(String path, String fileName, int seriesNumber, String rgb) 
-	{
-		return openLOCIImagePlus(path, fileName, seriesNumber, rgb, -1, -1);
-	}
-
-	public static ImagePlus openLOCIImagePlus(String path, String fileName, int seriesNumber) 
-	{
-		return openLOCIImagePlus(path, fileName, seriesNumber, "rgb", -1, -1);
-	}
-
-	public static ImagePlus openLOCIImagePlus(String path, String fileName, int seriesNumber, String rgb, int from, int to) 
-	{
-		if (path.length() > 1) 
-		{
-			path = path.replace('\\', '/');
-			if (!path.endsWith("/"))
-				path = path + "/";
-		}
-		
-		// parse howto assign channels
-		rgb = rgb.toLowerCase().trim();
-		final int colorAssign[][] = new int[rgb.length()][];
-		final int colorWeight[] = new int[3];
-		
-		for (int i = 0; i < colorAssign.length; i++)
-		{
-			if (rgb.charAt(i) == 'r')
-			{
-				colorAssign[i] = new int[1]; 
-				colorAssign[i][0] = 0;
-				colorWeight[0]++;
-			}
-			else if (rgb.charAt(i) == 'b')
-			{
-				colorAssign[i] = new int[1]; 
-				colorAssign[i][0] = 2;
-				colorWeight[2]++;
-			}
-			else if (rgb.charAt(i) == 'g')
-			{
-				colorAssign[i] = new int[1]; 
-				colorAssign[i][0] = 1;
-				colorWeight[1]++;
-			}
-			else //leave out
-			{
-				colorAssign[i] = new int[0]; 
-			}
-		}
-		
-		for (int i = 0; i < colorWeight.length; i++)
-			if (colorWeight[i] == 0)
-				colorWeight[i] = 1;
-		
-		ImagePlus imp = null;
-		
-		final String id = path + fileName;
-		final IFormatReader r = new ChannelSeparator();
-		
-		try 
-		{
-			r.setId(id);
-
-			// if loaded from a multiple series file (like LSM 710) select the correct series
-			if ( seriesNumber >= 0 )
-				r.setSeries( seriesNumber );
-
-			//final int num = r.getImageCount();
-			final int width = r.getSizeX();
-			final int height = r.getSizeY();
-			final int depth = r.getSizeZ();
-			final int timepoints = r.getSizeT();
-			final int channels;
-			//final String formatType = r.getFormat();
-			final int pixelType = r.getPixelType();
-			final int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType); 
-			final String pixelTypeString = FormatTools.getPixelTypeString(pixelType);
-			//final String dimensionOrder = r.getDimensionOrder();
-			
-			if (timepoints > 1)
-				IJ.log("More than one timepoint. Not implemented yet. Returning first timepoint");
-			
-			if (r.getSizeC() > 3)
-			{
-				IJ.log("More than three channels. ImageJ supports only 3 channels, returning the first three channels.");
-				channels = 3;
-			}
-			else
-			{
-				channels = r.getSizeC();
-			}				
-			
-			if (!(pixelType == FormatTools.UINT8 || pixelType == FormatTools.UINT16))
-			{
-				IJ.log("PixelType " + pixelTypeString + " not supported yet, returning. ");
-				return null;
-			}
-			
-			final int start, end;			
-			if (from < 0 || to < 0 || to < from)
-			{
-				start = 0; end = depth;
-			}
-			else 
-			{
-				start = from;
-				if (to > depth)
-					end = depth;
-				else 
-					end = to;
-			}
-			
-			/*System.out.println("width: " + width);
-			System.out.println("height: " + height);
-			System.out.println("depth: " + depth);
-			System.out.println("timepoints: " + timepoints);
-			System.out.println("channels: " + channels);
-			System.out.println("images: " + num);
-			System.out.println("image format: " + formatType);
-			System.out.println("bytes per pixel: " + bytesPerPixel);
-			System.out.println("pixel type: " + pixelTypeString);			
-			System.out.println("dimensionOrder: " + dimensionOrder);*/
-
-			final ImageStack stack = new ImageStack(width, height);	
-			final int t = 0;			
-			
-			for (int z = start; z < end; z++)
-			{				
-				byte[][] b = new byte[channels][width * height * bytesPerPixel];
-				
-				for (int c = 0; c < channels; c++)
-				{
-					final int index = r.getIndex(z, c, t);
-					r.openBytes(index, b[c]);					
-					//System.out.println(index);
-				}
-				
-				if (channels == 1)
-				{
-					if (pixelType == FormatTools.UINT8)
-					{
-						final ByteProcessor bp = new ByteProcessor(width, height, b[0], null);
-						stack.addSlice("" + (z + 1), bp);
-					}	
-					else if (pixelType == FormatTools.UINT16)
-					{
-						final short[] data = new short[width * height];
-						
-						for (int i = 0; i < data.length; i++)
-							data[i] = getShortValue(b[0], i * 2);
-													
-						final ShortProcessor sp = new ShortProcessor(width, height, data, null);
-						
-						stack.addSlice("" + (z + 1), sp);						
-					}						
-				}
-				else
-				{
-					final ColorProcessor cp = new ColorProcessor(width, height);
-					final int color[] = new int[3];
-					                            
-					if (pixelType == FormatTools.UINT8)
-						for (int y = 0; y < height; y++)
-							for (int x = 0; x < width; x++)
-							{
-								color[0] = color[1] = color[2] = 0;
-								
-								for (int c = 0; c < channels; c++)
-									for (int e = 0; e < colorAssign[c].length; e++)
-									color[colorAssign[c][e]] += b[c][x + y*width] & 0xff;
-								
-								color[0] /= colorWeight[0]; 
-								color[1] /= colorWeight[1]; 
-								color[2] /= colorWeight[2]; 
-									
-								cp.putPixel(x, y, color);
-							}
-					else if (pixelType == FormatTools.UINT16)
-						for (int y = 0; y < height; y++)
-							for (int x = 0; x < width; x++)
-							{
-								color[0] = color[1] = color[2] = 0;
-								
-								for (int c = 0; c < channels; c++)
-									color[c] = (byte)((int)getShortValue(b[c], 2 * (x + y*width))/256);
-								
-								cp.putPixel(x, y, color);
-							}
-					stack.addSlice("" + (z + 1), cp);						
-				}
-			}
-			
-			imp = new ImagePlus(fileName, stack);
-		}
-		catch (IOException exc) { IJ.log("IOException: " + exc.getMessage()); return null;}
-		catch (FormatException exc) { IJ.log("FormatException: " + exc.getMessage()); return null;}
-	                
-		return imp;
 	}
 
 	private static final short getShortValue(final byte[] b, final int i)
