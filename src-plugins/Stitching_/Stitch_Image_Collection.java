@@ -74,7 +74,7 @@ public class Stitch_Image_Collection implements PlugIn
 	
 	public double alpha = 1.5, thresholdR = 0.3, thresholdDisplacementRelative = 2.5, thresholdDisplacementAbsolute = 3.5;
 	public String rgbOrder = rgbTypes[0];
-	private double maxDeltaToExpectedCorrelation = -1;
+	public double maxDeltaToExpectedCorrelation = -1;
 	
 	public static String fileNameStatic = "TileConfiguration.txt";
 	public static boolean computeOverlapStatic = true;
