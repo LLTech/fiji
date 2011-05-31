@@ -154,7 +154,7 @@ PLUGINS_TYPE = {JAR_EXTENSION:'java jar file',
 PLUGINS_FOLDER = 'plugins'
 PLUGINS_MENU_NAME = 'Plugins'
 
-URL = 'http://pacific.mpi-cbg.de/wiki/index.php'
+URL = 'http://fiji.sc/wiki/index.php'
 PAGE = 'Template:PluginList'
 
 allElements = LinkedHashMap()
