@@ -58,7 +58,7 @@ public class ImageInformation extends Tile implements Comparable<ImageInformatio
 	
 	public String toString()
 	{
-		String out =  "Image: '" + imageShortName + "' Imp: '" + imp + "' Offset: (";
+		String out =  "Image: '" + imageShortName + "' Id: " + id + " Imp: '" + imp + "' Offset: (";
 		
 		for (int i = 0; i < offset.length; i++)
 		{

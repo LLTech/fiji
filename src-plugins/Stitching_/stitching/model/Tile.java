@@ -226,7 +226,7 @@ public class Tile
 		}
 		distance = ( float )d;
 		error = ( float )e;
-		model.setError( e );
+		model.setCost( e );
 	}
 	
 	/**
@@ -259,7 +259,7 @@ public class Tile
 		}
 		distance = ( float )d;
 		error = ( float )e;
-		model.setError( e );
+		model.setCost( e );
 	}
 	
 	/**

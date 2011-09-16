@@ -1727,10 +1727,14 @@ public class Stitch_Image_Collection implements PlugIn
 	{
 		int nbRows=0;
 		int totalNbImages=imageInformationList.size();
+
+		float offset_x = imageInformationList.get(0).position[0];
 		for(ImageInformation im:imageInformationList)
-			if (im.position[0]==0)
+			if (im.position[0]==offset_x)
 				nbRows++;
 
+		if (nbRows == 0)
+			return 0;
 		int nbTilesInRow = totalNbImages/nbRows;
 		IJ.log(nbTilesInRow+"x"+nbRows);
 		return nbTilesInRow;

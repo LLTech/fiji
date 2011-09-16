@@ -149,4 +149,7 @@ public class Point
 			p.w[ i ] = w[ i ];
 		return p;
 	}
+	
+	public String toString()
+	{ return "world: " + w + "local: " + l;}
 }
