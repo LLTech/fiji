@@ -1048,8 +1048,10 @@ public class Stitch_Image_Collection implements PlugIn
 			ArrayList< Tile > tiles = new ArrayList< Tile >();
 			for (final OverlapProperties o : overlappingTiles)
 			{
-				if (o.R < thresholdR)
-					o.validOverlap = false;
+				/*LLTech modification not suitable from mainstream: commented 2 lines below to still 
+				 * include tiles that have bad correlation with any neighbor*/
+//				if (o.R < thresholdR || o.correlationFallBack)
+//					o.validOverlap = false;
 	
 				if (o.validOverlap)
 				{

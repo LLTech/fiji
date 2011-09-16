@@ -45,9 +45,12 @@ public class OverlapProperties
 			deltaToExpected = new Point2D(translation3D.x - expected3D.x, translation3D.y - expected3D.y);
 		}
 		
-		if (maxDeltaToExpectedCorrelation != -1 && Math.sqrt(Math.pow(deltaToExpected.x, 2) + Math.pow(deltaToExpected.y, 2)) > maxDeltaToExpectedCorrelation)
+		
+		double delta = Math.sqrt(Math.pow(deltaToExpected.x, 2) + Math.pow(deltaToExpected.y, 2));
+		if (maxDeltaToExpectedCorrelation != -1 && (delta > maxDeltaToExpectedCorrelation || R < thresholdR ) )
 		{
-			R =  thresholdR;
+			if (R >= thresholdR)
+				R =  thresholdR;
 			correlationFallBack = true;
 			if (translation2D != null)
 				translation2D = expected2D;
