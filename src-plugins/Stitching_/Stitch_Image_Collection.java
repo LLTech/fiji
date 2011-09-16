@@ -1569,8 +1569,8 @@ public class Stitch_Image_Collection implements PlugIn
 
 		try
 		{
-			File layoutFileDir = new File(new File(fileName).getParent());
-			
+			File layoutFileDir = new File(fileName).getParentFile();
+
 			BufferedReader in = openFileRead(fileName);
 			int lineNo = 0;
 			
@@ -1626,7 +1626,6 @@ public class Stitch_Image_Collection implements PlugIn
 							return null;						
 						}
 						String imageName = entries[0].trim();
-						String imageShortName = imageName;
 						String imp = entries[1].trim();
 						
 						if (imageName.length() == 0 && imp.length() == 0)
@@ -1667,6 +1666,7 @@ public class Stitch_Image_Collection implements PlugIn
 							imageInformation = new ImageInformation(dim, imageInformationList.size(), new TranslationModel2D());
 						
 						imageInformation.imageName = imageName;
+						imageInformation.imageShortName = new File(imageName).getName();
 						if (imp.length() > 0)
 							imageInformation.imp = WindowManager.getImage(imp);
 						else
@@ -1729,10 +1729,14 @@ public class Stitch_Image_Collection implements PlugIn
 	{
 		int nbRows=0;
 		int totalNbImages=imageInformationList.size();
+
+		float offset_x = imageInformationList.get(0).position[0];
 		for(ImageInformation im:imageInformationList)
-			if (im.position[0]==0)
+			if (im.position[0]==offset_x)
 				nbRows++;
 
+		if (nbRows == 0)
+			return 0;
 		int nbTilesInRow = totalNbImages/nbRows;
 		IJ.log(nbTilesInRow+"x"+nbRows);
 		return nbTilesInRow;
