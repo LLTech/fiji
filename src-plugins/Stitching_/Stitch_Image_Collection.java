@@ -1160,7 +1160,7 @@ public class Stitch_Image_Collection implements PlugIn
 				double maxError = tc.getMaxError();				
 				
 				boolean reoptimize = false;
-				if (avgError*thresholdDisplacementRelative < maxError && maxError > 0.75)
+				if (avgError*thresholdDisplacementRelative < maxError && maxError > 5)
 				{
 					IJ.log("maximum displacement greater than " + thresholdDisplacementRelative + " times bigger than average displacement.");
 					reoptimize = true;
