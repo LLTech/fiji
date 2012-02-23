@@ -117,7 +117,8 @@ SUBMODULE_TARGETS=\
 	jars/imglib-io.jar \
 	jars/mpicbg.jar \
 	jars/commons-math.jar \
-	jars/imglib-scripting.jar
+	jars/imglib-scripting.jar \
+	stdalone-programs/StitchingGUI.jar
 
 PLUGIN_TARGETS=plugins/Jython_Interpreter.jar \
 	plugins/Clojure_Interpreter.jar \
@@ -243,6 +244,7 @@ jars/jai_core.jar[] <-
 jars/jai_codec.jar[] <-
 jars/jython.jar[] <-
 jars/batik.jar[] <-
+jars/commons-io-2.1.jar[] <-
 
 # From submodules
 jars/ij.jar <- jars/javac.jar modules/ImageJA/
@@ -409,7 +411,7 @@ CLASSPATH(plugins/3D_Blob_Segmentation.jar)=jars/ij.jar:plugins/level_sets.jar:p
 CLASSPATH(plugins/Feature_Detection.jar)=jars/ij.jar:jars/imglib-ij.jar:jars/imglib.jar:jars/imglib-algorithms.jar:jars/Jama-1.0.2.jar
 LIBS(plugins/JNI_Example.jar)=-lm
 CLASSPATH(plugins/JNI_Example.jar)=jars/ij.jar:jars/fiji-lib.jar
-
+CLASSPATH(stdalone-programs/StitchingGUI.jar)=jars/commons-io-2.1.jar
 # pre-Java5 generics ;-)
 
 src-plugins/VIB-lib/vib/FloatMatrix.java[src-plugins/VIB-lib/sed.py $PRE $TARGET] <- src-plugins/VIB-lib/vib/FastMatrix.java
@@ -419,6 +421,8 @@ src-plugins/VIB-lib/math3d/Eigensystem3x3Float.java[src-plugins/VIB-lib/sed.py $
 	src-plugins/VIB-lib/math3d/Eigensystem3x3Double.java
 src-plugins/VIB-lib/math3d/Eigensystem2x2Float.java[src-plugins/VIB-lib/sed.py $PRE $TARGET] <- \
 	src-plugins/VIB-lib/math3d/Eigensystem2x2Double.java
+
+stdalone-programs/StitchingGUI.jar <- stdalone-programs/com/lltechimaging/*.java
 
 MAINCLASS(jars/test-fiji.jar)=fiji.Tests
 CLASSPATH(jars/test-fiji.jar)=jars/junit-4.5.jar
